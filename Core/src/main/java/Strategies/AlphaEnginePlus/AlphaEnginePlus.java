@@ -3,21 +3,21 @@ package Strategies.AlphaEnginePlus;
 import DataFeed.QuoteDataFeed.*;
 import Infrastructure.OrderManagement.*;
 
-import Strategies.AlphaEnginePlus.*;
-
-import Strategies.Measures.*;
+import Strategies.iStrategy;
 import Infrastructure.Order.Order;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 //+------------------------------------------------------------------+
 //|   The class that combines the coast trading strategies.          |
 //+------------------------------------------------------------------+
-public class AlphaEnginePlus 
+public class AlphaEnginePlus implements iStrategy
 	  {
 	
 	   //--- print management
@@ -116,7 +116,7 @@ public class AlphaEnginePlus
 	//|   Core trading function, loops through the trading pairs and     |
 	//|   executes the asymmetric trade strategy.                        |
 	//+------------------------------------------------------------------+
-	  public Map<String, ArrayList<Order>> TradeAsymmetric(OrderManagement orderManagement, QuoteDataFeed quoteDataFeed)
+	  public Map<String, ArrayList<Order>> Trade(OrderManagement orderManagement, QuoteDataFeed quoteDataFeed)
 	  {
 	//--- update global liquidity
 	   //UpdateLiquidity();
@@ -154,6 +154,61 @@ public class AlphaEnginePlus
 		for(CoastTrading coastTradingPair: this.coastTradingPairs)
 			coastTradingPair.FetchQuoteData(quoteDataFeed);
 	  }
+
+
+
+	  public iStrategy Initialize(JSONObject parameters)
+	  {
+		String underlying;
+		String measureThresholds;
+		double deltaArray[];
+		double deltaOvershootScale[];
+		double positionSizeArray[];
+		double exposureBarrierLevels[];
+
+		//initialize arrays
+		try{
+		 deltaArray = new double[parameters.getJSONArray("deltaArray").length()];
+		  deltaOvershootScale= new double[parameters.getJSONArray("deltaOvershootScale").length()];
+		  positionSizeArray= new double[parameters.getJSONArray("positionSizeArray").length()];
+		  exposureBarrierLevels= new double[parameters.getJSONArray("exposureBarrierLevels").length()];
+		} catch(JSONException e){
+			//TODO: include dummy/default values
+			 deltaArray = null;
+			 deltaOvershootScale=null;
+			 positionSizeArray=null;
+			 exposureBarrierLevels=null;
+		}
+
+		try{
+		 underlying = parameters.getString("underlying");
+		} catch(JSONException e){
+			 underlying="dummy";
+		}
+
+		try{
+			for(int i =0; i<= parameters.getJSONArray("deltaArray").length();i++)
+				deltaArray[i] = parameters.getJSONArray("deltaArray").getDouble(i);
+		} catch(JSONException e)
+		{
+			deltaArray = null;
+		}
+
+		try{
+       	 measureThresholds=parameters.getString("measureThresholds");
+		} catch(JSONException e){
+			 measureThresholds="";
+		}
+
+		String fileID=""; 
+		QuoteDataFeed quoteDataFeed = null;
+
+
+		return new AlphaEnginePlus(underlying, deltaArray, deltaOvershootScale, positionSizeArray, 
+									exposureBarrierLevels, measureThresholds, fileID, quoteDataFeed);
+	  }
+
+
 	//+------------------------------------------------------------------+
 	//|   The function that updates the liquidity. Commented sections    |
 	//|   were just for printing information or the use of different     |

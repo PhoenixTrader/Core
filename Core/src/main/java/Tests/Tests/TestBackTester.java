@@ -92,7 +92,7 @@ public class TestBackTester {
 					
 					//quoteDataFeed.PrintFXLiveQuotes();
 
-					ordersFromStrategy = aePlus.TradeAsymmetric(orderManagement, quoteDataFeed);
+					ordersFromStrategy = aePlus.Trade(orderManagement, quoteDataFeed);
 					
 					if(!ordersFromStrategy.get(underlying).isEmpty())
 						System.out.print("stop");
