@@ -1,0 +1,11 @@
+{
+    "ticks": 1,
+    "frequency": "daily",
+    "startAmount": 10000,
+    "earliestStartDate": "2020-10-10",
+    "earliestStartTime": "09:00",
+    "latestEndDate": "2020-10-10",
+    "latestEndTime": "24:00",
+    "spreadType": "constant",
+    "spread": 0.0000001
+}

@@ -2,24 +2,17 @@ package main;
 
 import DataFeed.QuoteDataFeed.*;
 import Tests.Tests.*;
-import Tests.Tests.TestBackTester.*;
-import org.jsoup.select.Elements;
 
 import com.opencsv.CSVReader;
 
-import DataLoader.CandleStick.CandleStick;
 import Infrastructure.Quote.*;
 import DataFeed.Connector.*;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
-import java.time.LocalTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class main {
 

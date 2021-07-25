@@ -38,6 +38,8 @@ public class AlphaEnginePlus implements iStrategy
 	   //--- exposure management field
 
 	private ExposureManagement exposureManagement;
+
+	private ArrayList<String> assetClasses;
 	   //--- default constructor
 	public AlphaEnginePlus() {};
 
@@ -58,7 +60,7 @@ public class AlphaEnginePlus implements iStrategy
 	   int nbOfCoastTraders = deltaArray.length;
 	   this.deltas = deltaArray;
 	   this.positionSizes =  positionSizeArray;
-
+		this.assetClasses = new ArrayList<String>(Arrays.asList("FX"));
 	   double marginBarriers[] = new double[3];
 
 	   marginBarriers[0] = 5.0;
@@ -209,6 +211,14 @@ public class AlphaEnginePlus implements iStrategy
 	  }
 
 
+
+	  public ArrayList<String> GetUnderlyings(){
+		  return new ArrayList<String>(Arrays.asList(this.underlying));
+	  }
+
+	  public ArrayList<String> GetAssetClasses(){
+		return new ArrayList<String>(this.assetClasses);
+	  }
 	//+------------------------------------------------------------------+
 	//|   The function that updates the liquidity. Commented sections    |
 	//|   were just for printing information or the use of different     |
