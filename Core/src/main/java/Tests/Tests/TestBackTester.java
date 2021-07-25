@@ -52,7 +52,7 @@ public class TestBackTester {
 		AlphaEnginePlus aePlus = new AlphaEnginePlus(underlying, deltaArray, deltaOvershootScale, positionSizeArray,
 				exposureBarrierLevels, measureThresholds, fileID, quoteDataFeed);
 
-		int tickLimit = 400000;
+		int tickLimit = 1000000000;
 		// -----------------------------
 
 		double spread = 0.00000001;
@@ -61,12 +61,13 @@ public class TestBackTester {
 		String file = "E:/Projects/Algo Trading/Git/MonkeyTrading/HistoricalData/FX/"+ frame+"/"+underlying + ticks + ".csv"; // D:/MonkeyTrading/HistoricalData/Equity/minutely/test.csv
 		int currentTick = 0;
 		
-		
+		CSVReader csvReader = null;
+
 		try {
 
 			FileReader filereader = new FileReader(file);
 
-			CSVReader csvReader = new CSVReader(filereader);
+			csvReader = new CSVReader(filereader);
 			String[] nextRecord;
 			Quote[] quoteList;
 			
@@ -79,9 +80,11 @@ public class TestBackTester {
 
 			Map<String, ArrayList<Order>> ordersFromStrategy;
 			while ((nextRecord = csvReader.readNext()) != null) {
+				System.out.print(csvReader.readNext());
 				if (currentTick >= tickLimit) {
-					break;
+					//break;
 				}
+
 				for (Quote quote : CandleStick.CandleStickFromString(underlying, nextRecord).Expand(4, spread)) {
 
 					quote.SetSymbol(underlying);
@@ -94,13 +97,13 @@ public class TestBackTester {
 
 					ordersFromStrategy = aePlus.Trade(orderManagement, quoteDataFeed);
 					
-					if(!ordersFromStrategy.get(underlying).isEmpty())
-						System.out.print("stop");
+					//if(!ordersFromStrategy.get(underlying).isEmpty())
+					//	System.out.print("stop");
 					orderManagement.FillAndFetch("FX", ordersFromStrategy);
 
 					accountManagement.FetchData(orderManagement, quoteDataFeed);
 				}
-
+				/*
 				if( currentTick % 1000000000 ==0 )
 				{
 				System.out.print("----------- status -------------\n");
@@ -115,6 +118,7 @@ public class TestBackTester {
 				currentTick += 1;
 
 				System.out.println();
+				*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,5 +134,11 @@ public class TestBackTester {
 		System.out.print("----------- status end -------------\n");
 
 		System.out.print("Execution finished!\n");
+		try{
+		csvReader.close();
+		} catch (Exception e){
+
+		}
 	}
+
 }
