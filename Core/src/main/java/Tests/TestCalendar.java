@@ -1,4 +1,4 @@
-package Tests.Tests;
+package Tests;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

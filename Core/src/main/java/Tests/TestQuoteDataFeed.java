@@ -1,4 +1,4 @@
-package Tests.Tests;
+package Tests;
 
 import java.io.FileReader;
 import java.time.LocalDate;

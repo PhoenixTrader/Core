@@ -55,7 +55,7 @@ public class BacktesterOmnimodus {
 
         this.orderManagement = new OrderManagement(this.strategy.GetUnderlyings());
 
-        this.accountManagement = new AccountManagement(10000);
+        this.accountManagement = new AccountManagement(this.backtesterConfig.GetSpread());
 
         // CSVParser parser = new
         // CSVParserBuilder().withSeparator(',').withIgnoreQuotations(true).build();

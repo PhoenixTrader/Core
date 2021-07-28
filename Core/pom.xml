@@ -45,5 +45,12 @@
 			<artifactId>json</artifactId>
 			<version>20090211</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.zeromq/jeromq -->
+		<dependency>
+			<groupId>org.zeromq</groupId>
+			<artifactId>jeromq</artifactId>
+			<version>0.5.2</version>
+		</dependency>
+
 	</dependencies>
 </project>
