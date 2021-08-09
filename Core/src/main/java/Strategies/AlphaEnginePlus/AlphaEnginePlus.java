@@ -113,7 +113,6 @@ public class AlphaEnginePlus implements iStrategy
 	  }
 
 	  
-	  
 	//+------------------------------------------------------------------+
 	//|   Core trading function, loops through the trading pairs and     |
 	//|   executes the asymmetric trade strategy.                        |

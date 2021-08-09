@@ -104,6 +104,7 @@ public class BacktesterOmnimodus {
 
                     if (!ordersFromStrategy.get(this.underlyings.get(0)).isEmpty())
                         System.out.print("stop");
+                        
                     orderManagement.FillAndFetch("FX", ordersFromStrategy);
 
                     accountManagement.FetchData(orderManagement, quoteDataFeed);
