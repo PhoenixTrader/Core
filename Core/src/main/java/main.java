@@ -1,8 +1,10 @@
 
 import DataFeed.QuoteDataFeed.*;
-import Tests.Tests.*;
+import Tests.*;
 
 import com.opencsv.CSVReader;
+
+import org.json.JSONException;
 
 import Infrastructure.Quote.*;
 import DataFeed.Connector.*;
@@ -17,7 +19,7 @@ public class main {
 
 	public static void main(String[] args) {
 
-		String Test = "BackTestDev";
+		String Test = "Json";
 		/*
 		 * Test Quotes loadingCSV Calendar ZonedTime BackTestDev
 		 */
@@ -90,7 +92,16 @@ public class main {
 
 		else if (Test == "BackTestDev") {
 			TestBackTester.BackTest();
-		} else {
+		} 
+		
+		else if (Test == "Json") {
+			try{
+			TestJson.TestJson();
+			} catch(Exception e){
+				System.out.println("Exception: " + e); 
+			};
+		}
+		else {
 			System.out.println("Dummy");
 		}
 

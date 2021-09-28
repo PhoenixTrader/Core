@@ -1,4 +1,4 @@
-package Tests.Tests;
+package Tests;
 
 import java.io.FileReader;
 import java.time.LocalDate;
@@ -82,7 +82,8 @@ public class TestBackTester {
 			while ((nextRecord = csvReader.readNext()) != null) {
 				System.out.print(csvReader.readNext());
 				if (currentTick >= tickLimit) {
-					//break;
+					System.out.print("Tick llimit reached!\n");
+					break;
 				}
 
 				for (Quote quote : CandleStick.CandleStickFromString(underlying, nextRecord).Expand(4, spread)) {
