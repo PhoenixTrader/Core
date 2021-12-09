@@ -2,8 +2,11 @@ package DataFeed.CalendarFeed;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.CRC32C;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -25,6 +28,7 @@ public class ForexFactoryCalendarData extends GetForexFactoryCalendarPage {
 	private String website;
 	public Document fullHTMLPage; // raw HTML-String from the scraper
 	private Quote Quote; //Clase from Infrastructure
+	private Map<String, Object> setEvent;
 
 	//public Document GetfullHTMLPage(Document fullHTMLPage) {
 	//	return this.fullHTMLPage;
@@ -90,11 +94,15 @@ public class ForexFactoryCalendarData extends GetForexFactoryCalendarPage {
 			String StringTime = time.text();
 			StringTime = ConvertedTimeCalendar(StringTime);
 			// System.out.println(StringTime);
-			if (StringTime.isEmpty()) {
-				timeList.add(timeList.get(timeList.size() - 1));
-			} else
-				timeList.add(StringTime);
-
+			try{
+				if (StringTime.isEmpty()) {
+					timeList.add(ConvertedTimeCalendar(timeList.get(timeList.size() - 1)));
+				} else
+					timeList.add(StringTime);
+				}
+			catch(IndexOutOfBoundsException outOfBounds){
+				System.out.println("Error out of bounds");
+			}	
 		}
 		return timeList;
 	};
@@ -221,6 +229,26 @@ public class ForexFactoryCalendarData extends GetForexFactoryCalendarPage {
 		return GetDateTimeAsZonedDateTime;
 	};
 
+	public String eventBasedOnTime(ZonedDateTime lookUpTime){
+		int lookUpTimeIndex = times().indexOf(lookUpTime);
+		return events().get(lookUpTimeIndex);
+	}
+
+	public Map<String, Object> eventBasedOnTimeDict(ZonedDateTime TimePriceFeed){
+		int lookUpTimeIndex = times().indexOf(TimePriceFeed);
+		Map<String, Object> calendarEvent = new HashMap<String, Object>();
+		calendarEvent.put("TimePriceFeed", TimePriceFeed);
+		calendarEvent.put("TimeOfEvent", times().get(lookUpTimeIndex));
+		calendarEvent.put("Event", events().get(lookUpTimeIndex));
+		calendarEvent.put("Currency", currencies().get(lookUpTimeIndex));
+		calendarEvent.put("Actual", actuals().get(lookUpTimeIndex));
+		return calendarEvent;
+	}
+
+	public String currenciesBasedOnTime(ZonedDateTime lookUpTime){
+		int lookUpTimeIndex = times().indexOf(lookUpTime);
+		return currencies().get(lookUpTimeIndex);
+	}
 
 	// Search methods to get values
 	public Multimap<String, List<Object>> Searchevent(String ItemToSearch) {
