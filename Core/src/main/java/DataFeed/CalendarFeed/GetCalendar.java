@@ -259,7 +259,7 @@ public class GetCalendar {
 
 	public Hashtable<String, List<String>> eventsList(ZonedDateTime dateFromeDF, String website) {
 		LocalDate date = dateFromeDF.toLocalDate();
-		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF);
+		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF, website);
 		Document fullHTMLPage = GetCalendarWebsite(todayCalendar);
 		List<String> daysEvents = GetEventList(fullHTMLPage);
 		List<String> daysCurrencies = GetCurrenciesList(fullHTMLPage);
@@ -310,7 +310,7 @@ public class GetCalendar {
 
 	public Multimap<String, List<String>> eventsListMulti(ZonedDateTime dateFromeDF) {
 		LocalDate date = dateFromeDF.toLocalDate();
-		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF);
+		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF, website);
 		Document fullHTMLPage = GetCalendarWebsite(todayCalendar);
 		List<String> daysEvents = GetEventList(fullHTMLPage);
 		List<String> daysCurrencies = GetCurrenciesList(fullHTMLPage);
@@ -359,7 +359,7 @@ public class GetCalendar {
 	 * System.out.println(multimap.get(3));
 	 */
 	public void createCSV(ZonedDateTime dateFromeDF) {
-		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF);
+		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF, website);
 		Document fullHTMLPage = GetCalendarWebsite(todayCalendar);
 		List<String> daysEvents = GetEventList(fullHTMLPage);
 		List<String> daysCurrencies = GetCurrenciesList(fullHTMLPage);

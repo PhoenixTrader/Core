@@ -47,12 +47,16 @@ public class GetCalendarTimeSpan extends GetForexFactoryCalendarPage {
 	public Multimap<String, List<Object>> getFullCalendar() {
 
 		ForexFactoryCalendarData FFCEV = new ForexFactoryCalendarData();
+		
+		//Change
 		FFCEV.SetWebsite("https://www.forexfactory.com");
+		String website = "https://www.forexfactory.com";
+
 
 		for (LocalDate date = this.startDate; date.isBefore(this.endDate); date = date.plusDays(1)) {
 
-			Document fullHTMLPage = FFCEV.GetCalendarWebsite(date);
-			FFCEV.SetfullHTMLPage(fullHTMLPage);
+			Document fullHTMLPage = FFCEV.GetCalendarWebsite(website);
+			FFCEV.sfullHTMLPage(fullHTMLPage);
 
 			List<String> daysEvents = FFCEV.GetEventList();
 			List<String> daysCurrencies = FFCEV.GetCurrenciesList();

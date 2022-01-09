@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.CRC32C;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -28,7 +26,6 @@ public class ForexFactoryCalendarData extends GetForexFactoryCalendarPage {
 	private String website;
 	public Document fullHTMLPage; // raw HTML-String from the scraper
 	private Quote Quote; //Clase from Infrastructure
-	private Map<String, Object> setEvent;
 
 	//public Document GetfullHTMLPage(Document fullHTMLPage) {
 	//	return this.fullHTMLPage;

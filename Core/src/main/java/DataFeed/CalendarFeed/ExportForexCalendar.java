@@ -6,17 +6,14 @@ import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.jsoup.nodes.Document;
-
 public class ExportForexCalendar{
 
-	
+	private String website;
+
 	
 	 public void createCSV(LocalDate localDate) {
 		 	ForexFactoryCalendarData FCD = new ForexFactoryCalendarData();
-		 	LocalDate todayCalendar = LocalDate.now();
-			Document fullHTMLPage = FCD.GetCalendarWebsite(todayCalendar);
-			FCD.SetfullHTMLPage(fullHTMLPage);
+			FCD.SetWebsite("https://www.forexfactory.com");
 			List<String> daysEvents = FCD.GetEventList();
 			List<String> daysCurrencies = FCD.GetCurrenciesList(); 
 			List<String> daysActuals = FCD.GetActualList();
@@ -51,4 +48,19 @@ public class ExportForexCalendar{
 		    }
 	
 	
+
+    /**
+     * @return String return the website
+     */
+    public String getWebsite() {
+        return website;
+    }
+
+    /**
+     * @param website the website to set
+     */
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
 }
