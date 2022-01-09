@@ -8,9 +8,10 @@ import javax.script.ScriptException;
 
 public class CJavascriptChallengeHelper {
 
-	 private String regex1 = "setTimeout\\(function\\(\\)\\{\\s+(var s,t,o,p,b,r,e,a,k,i,n,g,f.+\\r?\\n[\\s\\S]*a\\.value = .+)\\r?\\n";
+	  private String regex1 = "setTimeout\\(function\\(\\)\\{\\s+(var s,t,o,p,b,r,e,a,k,i,n,g,f.+\\r?\\n[\\s\\S]*a\\.value = .+)\\r?\\n";
 	  private String regex2 = "a\\.value = (parseInt\\(.+?\\)).+";
 	  private String regex3 = "\\s{3,}[a-z](?: = |\\.).+";
+
 
 	  private final Pattern regex1pattern = Pattern.compile(regex1);
 	  private final Pattern regex2pattern = Pattern.compile(regex2);
