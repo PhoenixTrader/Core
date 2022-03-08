@@ -1,9 +1,41 @@
 package Tests;
 
-import IB_connect.ib.client.*;
+//import IB_connect.ib.client.*;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import IB_connect.ib.client.Bar;
+import IB_connect.ib.client.CommissionReport;
+import IB_connect.ib.client.Contract;
+import IB_connect.ib.client.ContractDescription;
+import IB_connect.ib.client.ContractDetails;
+import IB_connect.ib.client.DeltaNeutralContract;
+import IB_connect.ib.client.DepthMktDataDescription;
+import IB_connect.ib.client.EClientSocket;
+import IB_connect.ib.client.EJavaSignal;
+import IB_connect.ib.client.EReader;
+import IB_connect.ib.client.EWrapper;
+import IB_connect.ib.client.EWrapperMsgGenerator;
+import IB_connect.ib.client.Execution;
+import IB_connect.ib.client.FamilyCode;
+import IB_connect.ib.client.HistogramEntry;
+import IB_connect.ib.client.HistoricalTick;
+import IB_connect.ib.client.HistoricalTickBidAsk;
+import IB_connect.ib.client.HistoricalTickLast;
+import IB_connect.ib.client.NewsProvider;
+import IB_connect.ib.client.Order;
+import IB_connect.ib.client.OrderState;
+import IB_connect.ib.client.PriceIncrement;
+import IB_connect.ib.client.SoftDollarTier;
+import IB_connect.ib.client.TickAttrib;
+import IB_connect.ib.client.TickAttribBidAsk;
+import IB_connect.ib.client.TickAttribLast;
+import IB_connect.ib.client.TickType;
+
 import java.util.Set;
 
 public class API_get_ibkr_data implements EWrapper {
@@ -16,12 +48,18 @@ public class API_get_ibkr_data implements EWrapper {
 
     public static void main(String[] args) {
         new API_get_ibkr_data().run();
+        //new API_get_ibkr_data().run_v2();
     }
+
+    public Map<LinkedList<Integer>, ArrayList<Object>> test;
+    public LinkedList<String> end_date_EReader = new LinkedList<String>();
+    private String enddate = "20201028 16:00:00";
 
     public void run() {
         m_client.eConnect("127.0.0.1", 4002,0);   //7497(TWS)
         final EReader reader = new EReader(m_client, m_signal);
         reader.start();
+        
         new Thread() {
             @Override
             public void run() {
@@ -29,13 +67,55 @@ public class API_get_ibkr_data implements EWrapper {
                     m_signal.waitForSignal();
                     try {
                         reader.processMsgs();
+                        System.out.println("getDATA");
+                        test = reader.getDATA();
+                        System.out.println(test);
+                        if (end_date_EReader.size() > 0){
+                            System.out.println(end_date_EReader.get((end_date_EReader.size() - 1)));
+                        }
+                        System.out.println(end_date_EReader);
+                        System.out.println("END");
+                        if (end_date_EReader.size() > 0 && end_date_EReader.get((end_date_EReader.size() - 1)) != enddate){
+                            break;
+                        }
                     } catch (Exception e) {
                         System.out.println("Exception: " + e.getMessage());
+                        if (end_date_EReader.size() > 0 && end_date_EReader.get((end_date_EReader.size() - 1)) != enddate){
+                            System.out.println("END2");
+                            break;
+                        }
                     }
                 }
             }
         }.start();
     }
+
+    public void run_v2() {
+        m_client.eConnect("127.0.0.1", 4002,0);   //7497(TWS)
+        final EReader reader = new EReader(m_client, m_signal);
+        reader.start();
+        
+        new Thread() {
+            @Override
+            public void run() {
+                do
+                {
+                    System.out.println("Starting");
+                    m_signal.waitForSignal();
+                    try {
+                        reader.processMsgs();
+                        test = reader.getDATA();
+                        //end_date_EReader = reader.getEndDate();
+                        System.out.println(test);
+                        System.out.println(end_date_EReader.get((end_date_EReader.size() - 1)));
+                    } catch (Exception e) {
+                        System.out.println("Exception: " + e.getMessage());
+                    }
+                }while (end_date_EReader.get((end_date_EReader.size() - 1)) != enddate);
+            }
+        }.start();
+    }
+
 
 
     @Override
@@ -51,18 +131,58 @@ public class API_get_ibkr_data implements EWrapper {
         contract = new Contract();
         contract.symbol("EUR");
         contract.secType("CASH");
-        contract.exchange("IDEALPRO");
+        contract.exchange("IDEALPRO"); 
+        //contract.exchange("ISLAND");
         contract.currency("USD");
+        contract.primaryExch("IDEALPRO");
         
+        ArrayList<Double> openData = null;
+
         int counter = 1;
         do
         {
-            System.out.println("Historic data");
-            m_client.reqHistoricalData(1, contract, "20201028 16:00:00", "1 W", "1 day", "BID", 1, 1, false, null);
-            // BID, MIDPOINT, ASK
-            historicalDataEnd(1,"20201021 16:00:00", "20201028 16:00:00");
 
-            m_client.reqHistoricalTicks(counter, contract, "20170712 21:39:33", null, 10, "MIDPOINT", 1, true, null);
+            m_client.reqMarketDataType(4);  // switch to delayed-frozen data if live is not available
+            //Types
+            //1 - LIVE
+            //2 - Frozen
+            //3 - Delayed
+            //4 - Delayed Frozen
+            int liveFeed = 0;
+            if (liveFeed == 0){
+
+                System.out.println("Historic data");
+                m_client.reqHistoricalData(1, contract, this.enddate, "1 W", "1 day", "BID", 1, 1, false, null, openData);
+                //System.out.println(m_client.getData());    
+                //m_client.reqRealTimeBars(3001, contract, 1, "MIDPOINT", true, null);
+
+                /*
+        The method getData() is undefined for the type EClientSocket
+
+        at Tests.API_get_ibkr_data.nextValidId(API_get_ibkr_data.java:108)
+        at IB_connect.ib.client.EDecoder.processNextValidIdMsg(EDecoder.java:1353)
+        at IB_connect.ib.client.EDecoder.processMsg(EDecoder.java:241)
+        at IB_connect.ib.client.EReader.processMsgs(EReader.java:112)
+        at Tests.API_get_ibkr_data$1.run(API_get_ibkr_data.java:62)
+
+                */
+            }
+            else{
+
+                m_client.reqMktData(1, contract, "", false, false, null);
+
+                m_client.reqRealTimeBars(3001, contract, 5, "MIDPOINT", true, null);
+    
+                // BID, MIDPOINT, ASK
+                //historicalDataEnd(1,"20201021 16:00:00", "20201028 16:00:00");
+    
+                //EDecoder
+                //EMessage
+                //PreV100MessageReader
+
+
+            }
+            //m_client.reqHistoricalTicks(counter, contract, "20170712 21:39:33", null, 10, "MIDPOINT", 1, true, null);
             counter -= 1;
         } while(counter > 0);
     }
@@ -269,13 +389,6 @@ public class API_get_ibkr_data implements EWrapper {
 
     @Override
     public void scannerDataEnd(int reqId) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume,
-            double wap, int count) {
         // TODO Auto-generated method stub
         
     }
@@ -600,6 +713,13 @@ public class API_get_ibkr_data implements EWrapper {
 
     @Override
     public void completedOrdersEnd() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume,
+            double wap, int count) {
         // TODO Auto-generated method stub
         
     }
