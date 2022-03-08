@@ -54,6 +54,7 @@ public class API_get_ibkr_data implements EWrapper {
     public Map<LinkedList<Integer>, ArrayList<Object>> test;
     public LinkedList<String> end_date_EReader = new LinkedList<String>();
     private String enddate = "20201028 16:00:00";
+    private String enddate_loop = "20201027";
 
     public void run() {
         m_client.eConnect("127.0.0.1", 4002,0);   //7497(TWS)
@@ -63,25 +64,25 @@ public class API_get_ibkr_data implements EWrapper {
         new Thread() {
             @Override
             public void run() {
-                while (m_client.isConnected()) {
+                while (m_client.isConnected() && (!end_date_EReader.contains(enddate_loop))) {
                     m_signal.waitForSignal();
                     try {
                         reader.processMsgs();
-                        System.out.println("getDATA");
+                        System.out.println("Try to get data");
                         test = reader.getDATA();
-                        System.out.println(test);
+                        end_date_EReader = reader.currentDate();
+                        //System.out.println(end_date_EReader);
+                        //System.out.println(test);
                         if (end_date_EReader.size() > 0){
                             System.out.println(end_date_EReader.get((end_date_EReader.size() - 1)));
+                            break;
                         }
-                        System.out.println(end_date_EReader);
-                        System.out.println("END");
-                        if (end_date_EReader.size() > 0 && end_date_EReader.get((end_date_EReader.size() - 1)) != enddate){
+                        if (end_date_EReader.contains(enddate_loop)){
                             break;
                         }
                     } catch (Exception e) {
                         System.out.println("Exception: " + e.getMessage());
-                        if (end_date_EReader.size() > 0 && end_date_EReader.get((end_date_EReader.size() - 1)) != enddate){
-                            System.out.println("END2");
+                        if (end_date_EReader.contains(enddate_loop)){
                             break;
                         }
                     }
@@ -105,7 +106,6 @@ public class API_get_ibkr_data implements EWrapper {
                     try {
                         reader.processMsgs();
                         test = reader.getDATA();
-                        //end_date_EReader = reader.getEndDate();
                         System.out.println(test);
                         System.out.println(end_date_EReader.get((end_date_EReader.size() - 1)));
                     } catch (Exception e) {
@@ -136,19 +136,17 @@ public class API_get_ibkr_data implements EWrapper {
         contract.currency("USD");
         contract.primaryExch("IDEALPRO");
         
-        ArrayList<Double> openData = null;
-
         int counter = 1;
         do
         {
 
-            m_client.reqMarketDataType(4);  // switch to delayed-frozen data if live is not available
+            m_client.reqMarketDataType(1);  // switch to delayed-frozen data if live is not available
             //Types
             //1 - LIVE
             //2 - Frozen
             //3 - Delayed
             //4 - Delayed Frozen
-            int liveFeed = 0;
+            int liveFeed = 1;
             if (liveFeed == 0){
 
                 System.out.println("Historic data");
@@ -156,21 +154,11 @@ public class API_get_ibkr_data implements EWrapper {
                 //System.out.println(m_client.getData());    
                 //m_client.reqRealTimeBars(3001, contract, 1, "MIDPOINT", true, null);
 
-                /*
-        The method getData() is undefined for the type EClientSocket
-
-        at Tests.API_get_ibkr_data.nextValidId(API_get_ibkr_data.java:108)
-        at IB_connect.ib.client.EDecoder.processNextValidIdMsg(EDecoder.java:1353)
-        at IB_connect.ib.client.EDecoder.processMsg(EDecoder.java:241)
-        at IB_connect.ib.client.EReader.processMsgs(EReader.java:112)
-        at Tests.API_get_ibkr_data$1.run(API_get_ibkr_data.java:62)
-
-                */
+                
             }
             else{
-
+                System.out.println("Marktdata");
                 m_client.reqMktData(1, contract, "", false, false, null);
-
                 m_client.reqRealTimeBars(3001, contract, 5, "MIDPOINT", true, null);
     
                 // BID, MIDPOINT, ASK
@@ -214,6 +202,7 @@ public class API_get_ibkr_data implements EWrapper {
         System.out.println(id + " " + errorCode + " " + errorMsg);
     }
 
+        
     //@Override - why no override? old code versio?!?
     public void tickPrice(int tickerId, int field, double price, int canAutoExecute) {
 
@@ -231,15 +220,13 @@ public class API_get_ibkr_data implements EWrapper {
     //implementation rest of EWrapper
 
     @Override
-    public void tickPrice(int tickerId, int field, double price, TickAttrib attrib) {
-        // TODO Auto-generated method stub
-        
+    public void tickPrice(int tickerId, int field, double price, TickAttrib attribs) {
+        System.out.println("Tick Price. Ticker Id:"+tickerId+", Field: "+field+", Price: "+price+", CanAutoExecute: "+ attribs.canAutoExecute() +", pastLimit: " + attribs.pastLimit() + ", pre-open: " + attribs.preOpen());
     }
 
     @Override
     public void tickSize(int tickerId, int field, int size) {
-        // TODO Auto-generated method stub
-        
+        System.out.println("Tick Size. Ticker Id:" + tickerId + ", Field: " + field + ", Size: " + size);
     }
 
     @Override
