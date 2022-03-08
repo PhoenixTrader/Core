@@ -5,9 +5,13 @@ package IB_connect.ib.client;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.Map;
 
 
 
@@ -46,6 +50,85 @@ public class EReader extends Thread {
         m_processMsgsDecoder = new EDecoder(parent.serverVersion(), parent.wrapper(), parent);
     }
     
+	public Map<LinkedList<Integer>, ArrayList<Object>> getDATA(){
+		LinkedList<Integer> id = null;
+		LinkedList<String> date = null;
+		LinkedList<Double> open = null;
+		LinkedList<Double> high = null;
+		LinkedList<Double> low = null;
+		LinkedList<Double> close = null;
+		LinkedList<Long> volume = null;
+		LinkedList<Integer> count = null;
+		LinkedList<Double> WAP = null;
+		Map<LinkedList<Integer>,ArrayList<Object>> getDATA = new HashMap<>();
+		
+		ArrayList<Object> ibkrData = new ArrayList<Object>();
+
+		Hashtable<String, LinkedList<Integer>> idDict = new Hashtable<>();
+		Hashtable<String, LinkedList<String>> dateDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Double>> openDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Double>> highDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Double>> lowDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Double>> closeDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Long>> volumeDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Integer>> countDict = new Hashtable<>();
+		Hashtable<String, LinkedList<Double>> wapDict = new Hashtable<>();
+
+		Map<LinkedList<Integer>,ArrayList<Object>> getDATA2 = new HashMap<>();
+		ArrayList<Object> ibkrData2 = new ArrayList<Object>();
+
+		id = m_processMsgsDecoder.fillID;
+		date = m_processMsgsDecoder.fillDate;
+		open = m_processMsgsDecoder.fillOpen;
+		high = m_processMsgsDecoder.fillHigh;
+		low = m_processMsgsDecoder.fillLow;
+		close = m_processMsgsDecoder.fillClose;
+		volume = m_processMsgsDecoder.fillVolume;
+		count = m_processMsgsDecoder.fillCount;
+		WAP = m_processMsgsDecoder.fillWAP;
+
+		ibkrData.add(date);
+		ibkrData.add(open);
+		ibkrData.add(high);
+		ibkrData.add(low);
+		ibkrData.add(close);
+		ibkrData.add(volume);
+		ibkrData.add(count);
+		ibkrData.add(WAP);
+
+		idDict.put("ID", id);
+		dateDict.put("Date", date);
+		openDict.put("Open", open);
+		highDict.put("High", high);
+		lowDict.put("Low", low);
+		closeDict.put("Close", close);
+		volumeDict.put("Volume", volume);
+		countDict.put("Count", count);
+		wapDict.put("WAP", WAP);
+		
+		ibkrData2.add(dateDict);
+		ibkrData2.add(openDict);
+		ibkrData2.add(highDict);
+		ibkrData2.add(lowDict);
+		ibkrData2.add(closeDict);
+		ibkrData2.add(volumeDict);
+		ibkrData2.add(countDict);
+		ibkrData2.add(wapDict);
+
+		getDATA2.put(id, ibkrData2);
+		
+		getDATA.put(id, ibkrData);
+		
+		return getDATA2;
+		//return getDATA;
+	}
+
+//	public LinkedList<String> getEndDate(){
+//		LinkedList<String> fillDataEnddate = null;
+//		fillDataEnddate = m_processMsgsDecoder.fillDataEnddate;
+//		return fillDataEnddate;
+//	}
+
     /**
      * Read and put messages to the msg queue until interrupted or TWS closes connection.
      */
@@ -108,7 +191,7 @@ public class EReader extends Thread {
     
     public void processMsgs() throws IOException {
     	EMessage msg = getMsg();
-    	
+    	System.out.println("MESSAGE");
     	while (msg != null && m_processMsgsDecoder.processMsg(msg) > 0) {
     		msg = getMsg();
     	}
