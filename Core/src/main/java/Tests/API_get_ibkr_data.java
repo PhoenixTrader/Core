@@ -71,8 +71,8 @@ public class API_get_ibkr_data implements EWrapper {
                         System.out.println("Try to get data");
                         test = reader.getDATA();
                         end_date_EReader = reader.currentDate();
-                        //System.out.println(end_date_EReader);
-                        //System.out.println(test);
+                        System.out.println(end_date_EReader);
+                        System.out.println(test);
                         if (end_date_EReader.size() > 0){
                             System.out.println(end_date_EReader.get((end_date_EReader.size() - 1)));
                             break;
@@ -107,11 +107,10 @@ public class API_get_ibkr_data implements EWrapper {
                         reader.processMsgs();
                         test = reader.getDATA();
                         System.out.println(test);
-                        System.out.println(end_date_EReader.get((end_date_EReader.size() - 1)));
                     } catch (Exception e) {
                         System.out.println("Exception: " + e.getMessage());
                     }
-                }while (end_date_EReader.get((end_date_EReader.size() - 1)) != enddate);
+                }
             }
         }.start();
     }
@@ -146,31 +145,19 @@ public class API_get_ibkr_data implements EWrapper {
             //2 - Frozen
             //3 - Delayed
             //4 - Delayed Frozen
+            //liveFeed to switch between hist data and market data
             int liveFeed = 1;
             if (liveFeed == 0){
 
                 System.out.println("Historic data");
                 m_client.reqHistoricalData(1, contract, this.enddate, "1 W", "1 day", "BID", 1, 1, false, null);
-                //System.out.println(m_client.getData());    
-                //m_client.reqRealTimeBars(3001, contract, 1, "MIDPOINT", true, null);
 
-                
             }
             else{
                 System.out.println("Marktdata");
                 m_client.reqMktData(1, contract, "", false, false, null);
                 m_client.reqRealTimeBars(3001, contract, 5, "MIDPOINT", true, null);
-    
-                // BID, MIDPOINT, ASK
-                //historicalDataEnd(1,"20201021 16:00:00", "20201028 16:00:00");
-    
-                //EDecoder
-                //EMessage
-                //PreV100MessageReader
-
-
             }
-            //m_client.reqHistoricalTicks(counter, contract, "20170712 21:39:33", null, 10, "MIDPOINT", 1, true, null);
             counter -= 1;
         } while(counter > 0);
     }
@@ -185,7 +172,7 @@ public class API_get_ibkr_data implements EWrapper {
         System.out.println("HistoricalData:  " + EWrapperMsgGenerator.historicalData(reqId, bar.time(), bar.open(), bar.high(), bar.low(), bar.close(), bar.volume(), bar.count(), bar.wap()));
     }
 
-    // @Override //- why no override? old code versio?!?
+    // @Override //- why no override? old code version?!?
     // public void historicalData(int reqId, String date, double open, double high, double low, double close, int volume, int count, double WAP, boolean hasGaps) {
     //     //if being run on the next calendar day, this works
     //     if (LocalDate.now().minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE).equals(date)){
@@ -194,8 +181,6 @@ public class API_get_ibkr_data implements EWrapper {
     //         System.out.println(date + " h: " + high + " l: " +low);
     //     }
     // }
-
-
 
     @Override
     public void error(int id, int errorCode, String errorMsg) {
@@ -217,8 +202,6 @@ public class API_get_ibkr_data implements EWrapper {
         }
 
     }
-    //implementation rest of EWrapper
-
     @Override
     public void tickPrice(int tickerId, int field, double price, TickAttrib attribs) {
         System.out.println("Tick Price. Ticker Id:"+tickerId+", Field: "+field+", Price: "+price+", CanAutoExecute: "+ attribs.canAutoExecute() +", pastLimit: " + attribs.pastLimit() + ", pre-open: " + attribs.preOpen());
