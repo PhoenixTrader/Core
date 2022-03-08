@@ -12,9 +12,13 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 import java.util.Set;
 
 class EDecoder implements ObjectInput {
@@ -148,11 +152,12 @@ class EDecoder implements ObjectInput {
     } 
     
     private boolean readMessageToInternalBuf(InputStream dis) {
-  		m_messageReader = new PreV100MessageReader(dis);
+		m_messageReader = new PreV100MessageReader(dis);
     	return true;
     }
     
     public int processMsg(EMessage msg) throws IOException {
+
     	if (!readMessageToInternalBuf(msg.getStream())) {
     		return 0;
     	}
@@ -274,6 +279,7 @@ class EDecoder implements ObjectInput {
                 break;
             
             case HISTORICAL_DATA:
+			    System.out.println("CALL DATA Messeger");;
                 processHistoricalDataMsg();
                 break;
             
@@ -603,6 +609,8 @@ class EDecoder implements ObjectInput {
         double WAP = readDouble();
         long volume = readLong();
 
+		//CHECKPOINT
+		System.out.println("CHECKPOINT");
         m_EWrapper.historicalDataUpdate(reqId, new Bar(date, open, high, low, close, volume, barCount, WAP));
     }
 
@@ -971,6 +979,16 @@ class EDecoder implements ObjectInput {
 		m_EWrapper.scannerParameters(xml);
 	}
 
+	public LinkedList<Integer> fillID = new LinkedList<Integer>();
+	public LinkedList<String> fillDate = new LinkedList<String>();
+	public LinkedList<Double> fillOpen = new LinkedList<Double>();
+	public LinkedList<Double> fillHigh = new LinkedList<Double>();
+	public LinkedList<Double> fillLow = new LinkedList<Double>();
+	public LinkedList<Double> fillClose = new LinkedList<Double>();
+	public LinkedList<Long> fillVolume = new LinkedList<Long>();
+	public LinkedList<Integer> fillCount = new LinkedList<Integer>();
+	public LinkedList<Double> fillWAP = new LinkedList<Double>();
+
 	private void processHistoricalDataMsg() throws IOException {
 	    int version = Integer.MAX_VALUE;
 	    
@@ -1005,12 +1023,36 @@ class EDecoder implements ObjectInput {
 	        if (version >= 3) {
 	            barCount = readInt();
 	        }
-	        
+	        //System.out.println("String from m_EWrapper.historicalData / EDecoder - processHistoricalDataMsg");
+			//System.out.println("Transition of Bar data to MsgGenerator");
+			if (open > 0){
+				fillID.add(reqId);
+				fillDate.add(date);
+				fillOpen.add(open);
+				fillHigh.add(high);
+				fillLow.add(low);
+				fillClose.add(close);
+				fillVolume.add(volume);
+				fillCount.add(barCount);
+				fillWAP.add(WAP);
+			}
+			//ArrayList<Double> openData = null;
+			//getData(reqId, date, open, high, low, close, volume, barCount, WAP, openData);
 	        m_EWrapper.historicalData(reqId, new Bar(date, open, high, low, close, volume, barCount, WAP));
 	    }
 	    // send end of dataset marker
 	    m_EWrapper.historicalDataEnd(reqId, startDateStr, endDateStr);
 	}
+
+
+    // public static ArrayList<Double> getData(int reqId, String date, double open, double high, double low,
+    //                     double close, long volume, int count, double WAP, ArrayList<Double> openData){
+                        
+    // openData.add(open);
+    // return openData;
+
+    // }
+
 
 	private void processReceiveFaMsg() throws IOException {
 	    /*int version =*/ readInt();
@@ -2016,6 +2058,7 @@ class EDecoder implements ObjectInput {
     	private int m_msgLength = 0;
     	
     	PreV100MessageReader( InputStream din ) {
+			//Dataflow: System.out.println("PreV100MessageReader - EDecoder");
     		m_din = din;
     	}
     	
