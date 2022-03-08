@@ -152,7 +152,7 @@ public class API_get_ibkr_data implements EWrapper {
             if (liveFeed == 0){
 
                 System.out.println("Historic data");
-                m_client.reqHistoricalData(1, contract, this.enddate, "1 W", "1 day", "BID", 1, 1, false, null, openData);
+                m_client.reqHistoricalData(1, contract, this.enddate, "1 W", "1 day", "BID", 1, 1, false, null);
                 //System.out.println(m_client.getData());    
                 //m_client.reqRealTimeBars(3001, contract, 1, "MIDPOINT", true, null);
 
