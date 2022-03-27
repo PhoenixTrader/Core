@@ -13,6 +13,8 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Map;
 
+import DataLoader.CandleStick.CandleStick;
+
 
 
 /**
@@ -49,7 +51,12 @@ public class EReader extends Thread {
         m_signal = signal;
         m_processMsgsDecoder = new EDecoder(parent.serverVersion(), parent.wrapper(), parent);
     }
-    
+   
+	public LinkedList<String> currentDate(){
+		LinkedList<String> currentDate = m_processMsgsDecoder.fillDate;
+		return currentDate;
+	}
+
 	public Map<LinkedList<Integer>, ArrayList<Object>> getDATA(){
 		LinkedList<Integer> id = null;
 		LinkedList<String> date = null;
@@ -191,7 +198,6 @@ public class EReader extends Thread {
     
     public void processMsgs() throws IOException {
     	EMessage msg = getMsg();
-    	System.out.println("MESSAGE");
     	while (msg != null && m_processMsgsDecoder.processMsg(msg) > 0) {
     		msg = getMsg();
     	}

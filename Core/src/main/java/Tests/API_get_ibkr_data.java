@@ -146,7 +146,7 @@ public class API_get_ibkr_data implements EWrapper {
             //3 - Delayed
             //4 - Delayed Frozen
             //liveFeed to switch between hist data and market data
-            int liveFeed = 1;
+            int liveFeed = 0;
             if (liveFeed == 0){
 
                 System.out.println("Historic data");

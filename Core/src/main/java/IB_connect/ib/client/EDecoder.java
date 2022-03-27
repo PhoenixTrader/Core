@@ -8,6 +8,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import DataLoader.CandleStick.CandleStick;
 import ch.qos.logback.core.net.SyslogOutputStream;
 
 import java.util.Set;
@@ -40,7 +44,7 @@ class EDecoder implements ObjectInput {
     private static final int NEWS_BULLETINS    	= 14;
     private static final int MANAGED_ACCTS    	= 15;
     private static final int RECEIVE_FA    	    = 16;
-    private static final int HISTORICAL_DATA    = 17;
+    private static final int HISTORICAL_DATA    = 17; //17
     private static final int BOND_CONTRACT_DATA = 18;
     private static final int SCANNER_PARAMETERS = 19;
     private static final int SCANNER_DATA       = 20;
@@ -101,6 +105,8 @@ class EDecoder implements ObjectInput {
     private static final int ORDER_BOUND = 100;
     private static final int COMPLETED_ORDER = 101;
     private static final int COMPLETED_ORDERS_END = 102;
+
+	private static final int CANDLESTICK_DATA = 999;
 
     static final int MAX_MSG_LENGTH = 0xffffff;
     private static final int REDIRECT_MSG_ID = -1;
@@ -282,6 +288,12 @@ class EDecoder implements ObjectInput {
 			    System.out.println("CALL DATA Messeger");;
                 processHistoricalDataMsg();
                 break;
+
+			//ABE
+			case CANDLESTICK_DATA:
+				System.out.println("CALL DATA Messeger");;
+				processHistoricalCandlSticks();
+				break;
             
             case SCANNER_PARAMETERS:
                 processScannerParametersMsg();
@@ -1038,12 +1050,82 @@ class EDecoder implements ObjectInput {
 			}
 			//ArrayList<Double> openData = null;
 			//getData(reqId, date, open, high, low, close, volume, barCount, WAP, openData);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+			//DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");	
+			ZonedDateTime zdtWithZoneOffset = ZonedDateTime.parse("2022.03.21 10:10", formatter.withZone(ZoneId.systemDefault()));
+
+			CandleStick candle = new CandleStick("Test", zdtWithZoneOffset, open, high, low, close, volume);
+			System.out.println("CANDLE");
+			System.out.println(candle);
+			System.out.println("END Candle");
+
 	        m_EWrapper.historicalData(reqId, new Bar(date, open, high, low, close, volume, barCount, WAP));
 	    }
 	    // send end of dataset marker
 	    m_EWrapper.historicalDataEnd(reqId, startDateStr, endDateStr);
 	}
 
+	private void processHistoricalCandlSticks() throws IOException {
+		int version = Integer.MAX_VALUE;
+	    
+	    if (m_serverVersion < EClient.MIN_SERVER_VER_SYNT_REALTIME_BARS) {
+	        version = readInt();
+	    }
+	    
+	    int reqId = readInt();
+	    String startDateStr = "";
+	    String endDateStr = "";
+
+	    if (version >= 2) {
+	        startDateStr = readStr();
+	        endDateStr = readStr();
+	    }
+	    int itemCount = readInt();
+	    for (int ctr = 0; ctr < itemCount; ctr++) {
+	        String date = readStr();
+	        double open = readDouble();
+	        double high = readDouble();
+	        double low = readDouble();
+	        double close = readDouble();
+            long volume = m_serverVersion < EClient.MIN_SERVER_VER_SYNT_REALTIME_BARS ? readInt() : readLong();
+	        double WAP = readDouble();
+	        
+	        if (m_serverVersion < EClient.MIN_SERVER_VER_SYNT_REALTIME_BARS) {	        
+	            /*String hasGaps = */readStr();
+	        }
+	        
+	        int barCount = -1;
+	        
+	        if (version >= 3) {
+	            barCount = readInt();
+	        }
+	        //System.out.println("String from m_EWrapper.historicalData / EDecoder - processHistoricalDataMsg");
+			//System.out.println("Transition of Bar data to MsgGenerator");
+			if (open > 0){
+				fillID.add(reqId);
+				fillDate.add(date);
+				fillOpen.add(open);
+				fillHigh.add(high);
+				fillLow.add(low);
+				fillClose.add(close);
+				fillVolume.add(volume);
+				fillCount.add(barCount);
+				fillWAP.add(WAP);
+			}
+			//ArrayList<Double> openData = null;
+			//getData(reqId, date, open, high, low, close, volume, barCount, WAP, openData);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+			ZonedDateTime zdtWithZoneOffset = ZonedDateTime.parse(date, formatter);
+
+			CandleStick candle = new CandleStick("Test", zdtWithZoneOffset, open, high, low, close, volume);
+			System.out.println("CANDLE");
+			System.out.println(candle);
+			System.out.println("END Candle");
+	        m_EWrapper.historicalData(reqId, new Bar(date, open, high, low, close, volume, barCount, WAP));
+	    }
+	    // send end of dataset marker
+	    m_EWrapper.historicalDataEnd(reqId, startDateStr, endDateStr);
+	}
 
     // public static ArrayList<Double> getData(int reqId, String date, double open, double high, double low,
     //                     double close, long volume, int count, double WAP, ArrayList<Double> openData){
