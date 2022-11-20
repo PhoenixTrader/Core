@@ -24,7 +24,6 @@ public class GetForexFactoryCalendarPage {
     private String website;
 
     public Hashtable<String, String> monthToString() {
-        // creating a My HashTable Dictionary
         Hashtable<String, String> monthConverter = new Hashtable<String, String>();
         monthConverter.put("1", "jan");
         monthConverter.put("2", "feb");
@@ -59,10 +58,10 @@ public class GetForexFactoryCalendarPage {
         }
         String calendarDate = dayAsString + "-" + monthAsString + "-" + yearAsString;
         return calendarDate;
-        // "dd-MM-yyyy"
+        // Date frormatting: "dd-MM-yyyy"
     }
 
-	public String GetFullWebsiteNameBasedOnDate(ZonedDateTime dateFromeDF, String website) {
+	public String GetFullWebsiteNameBasedOnDate(ZonedDateTime dateFromeDF) {
 		// Parameters type are choosen based on the need of the webpage requirement
 		Hashtable<String, String> monthToString = monthToString();
 
@@ -71,7 +70,7 @@ public class GetForexFactoryCalendarPage {
 		String monthString = Integer.toString(date.getMonthValue());
 		String yearAsString = Integer.toString(date.getYear());
 		monthString = monthToString.get(monthString);
-		String fullWebsite = website + "/calendar?day=" + monthString + dayAsString + "." + yearAsString;
+		String fullWebsite = this.website + "/calendar?day=" + monthString + dayAsString + "." + yearAsString;
 		return fullWebsite;
 	}
 
@@ -184,7 +183,6 @@ public class GetForexFactoryCalendarPage {
 	}
 
     public Hashtable<String, String> afternoonDictionary() {
-		// creating a My HashTable Dictionary
 		Hashtable<String, String> afternoonHours = new Hashtable<String, String>();
 		afternoonHours.put("1", "13");
 		afternoonHours.put("2", "14");
