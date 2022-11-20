@@ -3,6 +3,8 @@ package DataFeed.CalendarFeed;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Hashtable;
 import java.util.List;
@@ -60,6 +62,17 @@ public class GetForexFactoryCalendarPage {
         return calendarDate;
         // Date frormatting: "dd-MM-yyyy"
     }
+
+	public ZonedDateTime createZonedDateTime(LocalDate localDate, String time, String zoneID) {
+		// Create TimeKey for Hashtable
+		LocalDateTime localDateTime = localDate.atTime(Integer.parseInt(time.substring(0, 2)),
+				Integer.parseInt(time.substring(3, 5)), Integer.parseInt(time.substring(6, 8))); // Add time information
+		// System.out.println(localDateTime);
+		ZoneId zoneId = ZoneId.of(zoneID); // Zone information: e.g. "Asia/Kolkata", "America/New_York"
+		ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId); // add zone information
+		return zonedDateTime;
+
+	}
 
 	public String GetFullWebsiteNameBasedOnDate(ZonedDateTime dateFromeDF) {
 		// Parameters type are choosen based on the need of the webpage requirement

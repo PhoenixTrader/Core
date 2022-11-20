@@ -62,6 +62,8 @@ public class ForexFactoryCalendarData extends GetForexFactoryCalendarPage {
 		this.Quote = Quote;
 	}
 
+
+	
 	// Create lists
 	public List<String> GetEventList() {
 
@@ -337,20 +339,18 @@ public class ForexFactoryCalendarData extends GetForexFactoryCalendarPage {
 	public Hashtable<String, List<String>> todaysEvents = new Hashtable<String, List<String>>();
 	
 	public void lCalDataOLD(ZonedDateTime date){
-		GetCalendar calendarfeed = new GetCalendar();
-		String sCalWebsite = calendarfeed.GetFullWebsiteNameBasedOnDate(date, this.website);
-		fullHTMLPage = calendarfeed.GetCalendarWebsite(sCalWebsite);
-		daysEvents = calendarfeed.GetEventList(fullHTMLPage);
-		daysCurrencies = calendarfeed.GetCurrenciesList(fullHTMLPage);
-		daysActuals = calendarfeed.GetActualList(fullHTMLPage);
-		daysTime = calendarfeed.GetTimeList(fullHTMLPage);
-		todaysEvents = calendarfeed.todaysEvents(daysEvents.size(), daysEvents, daysCurrencies,
+		String sCalWebsite = GetFullWebsiteNameBasedOnDate(date);
+		fullHTMLPage = GetCalendarWebsite(sCalWebsite);
+		daysEvents = GetEventList(fullHTMLPage);
+		daysCurrencies = GetCurrenciesList(fullHTMLPage);
+		daysActuals = GetActualList(fullHTMLPage);
+		daysTime = GetTimeList(fullHTMLPage);
+		todaysEvents = todaysEvents(daysEvents.size(), daysEvents, daysCurrencies,
 				daysTime, daysActuals);
 	}
 
 	public void lCalData(){
-		String website = this.website;
-		String sCalWebsite = this.GetFullWebsiteNameBasedOnDate(Quote.GetTime(), website);
+		String sCalWebsite = this.GetFullWebsiteNameBasedOnDate(Quote.GetTime());
 		fullHTMLPage = this.GetCalendarWebsite(sCalWebsite);
 		daysEvents = this.GetEventList(fullHTMLPage);
 		daysCurrencies = this.GetCurrenciesList(fullHTMLPage);
