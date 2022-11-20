@@ -86,7 +86,7 @@ public class GetCalendar {
 		return fullWebsite;
 	}
 
-	public String GetFullWebsiteNameBasedOnDate(ZonedDateTime dateFromeDF, String website) {
+	public String GetFullWebsiteNameBasedOnDate(ZonedDateTime dateFromeDF) {
 		// Parameters type are choosen based on the need of the webpage requirement
 		Hashtable<String, String> monthToString = monthToString();
 
@@ -95,7 +95,7 @@ public class GetCalendar {
 		String monthString = Integer.toString(date.getMonthValue());
 		String yearAsString = Integer.toString(date.getYear());
 		monthString = monthToString.get(monthString);
-		String fullWebsite = website + "/calendar?day=" + monthString + dayAsString + "." + yearAsString;
+		String fullWebsite = this.website + "/calendar?day=" + monthString + dayAsString + "." + yearAsString;
 		return fullWebsite;
 	}
 
@@ -259,7 +259,7 @@ public class GetCalendar {
 
 	public Hashtable<String, List<String>> eventsList(ZonedDateTime dateFromeDF, String website) {
 		LocalDate date = dateFromeDF.toLocalDate();
-		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF, website);
+		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF);
 		Document fullHTMLPage = GetCalendarWebsite(todayCalendar);
 		List<String> daysEvents = GetEventList(fullHTMLPage);
 		List<String> daysCurrencies = GetCurrenciesList(fullHTMLPage);
@@ -310,7 +310,7 @@ public class GetCalendar {
 
 	public Multimap<String, List<String>> eventsListMulti(ZonedDateTime dateFromeDF) {
 		LocalDate date = dateFromeDF.toLocalDate();
-		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF, website);
+		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF);
 		Document fullHTMLPage = GetCalendarWebsite(todayCalendar);
 		List<String> daysEvents = GetEventList(fullHTMLPage);
 		List<String> daysCurrencies = GetCurrenciesList(fullHTMLPage);
@@ -358,20 +358,16 @@ public class GetCalendar {
 	 * System.out.println(multimap.get(1)); System.out.println(multimap.get(2));
 	 * System.out.println(multimap.get(3));
 	 */
-	public void createCSV(ZonedDateTime dateFromeDF) {
-		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF, website);
+	public void createCSV(ZonedDateTime dateFromeDF) throws FileNotFoundException {
+		String todayCalendar = GetFullWebsiteNameBasedOnDate(dateFromeDF);
 		Document fullHTMLPage = GetCalendarWebsite(todayCalendar);
 		List<String> daysEvents = GetEventList(fullHTMLPage);
 		List<String> daysCurrencies = GetCurrenciesList(fullHTMLPage);
 		List<String> daysActuals = GetActualList(fullHTMLPage);
 		List<String> daysTime = GetTimeList(fullHTMLPage);
 
-		PrintWriter pw = null;
-		try {
-			pw = new PrintWriter(new File("NewData.csv"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		PrintWriter pw = new PrintWriter(new File("NewData.csv"));
+
 		StringBuilder builder = new StringBuilder();
 		String columnNamesList = "events, currencies, actual, time";
 		builder.append(columnNamesList + "\n");

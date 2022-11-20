@@ -1,9 +1,9 @@
-// package Tests;
+package Tests;
 
-// import java.time.LocalDate;
-// import java.time.LocalDateTime;
-// import java.time.ZonedDateTime;
-// import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+//import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 // import java.util.Hashtable;
 // import java.util.List;
 // import org.jsoup.nodes.Document;
@@ -12,30 +12,27 @@
 // import com.google.common.collect.Multimap;
 
 // import DataFeed.CalendarFeed.ForexFactoryCalendarData;
-// import DataFeed.CalendarFeed.GetCalendar;
+import DataFeed.CalendarFeed.GetCalendar;
 // import DataFeed.CalendarFeed.GetCalendarTimeSpan;
 // import DataFeed.CalendarFeed.GetForexFactoryCalendarPage;
 
-// public class TestCalendar {
+public class TestCalendar {
 
-// 	public void dateTest()
-// 	{
+	public void test_generate_websiteName()
+	{
 	
-// 	String TESTTIME = "9:00am";
-// 	GetCalendar calendarfeed = new GetCalendar();
-// 	TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
-// 	String calDateTest = calendarfeed.GetCalendarDate("22", 3, "2021");
-// 	//System.out.println(TESTTIME);
-// 	System.out.println(calDateTest);
-//     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//     LocalDate localDate = LocalDate.parse(calDateTest, formatter);
-//     System.out.println("localDate: " + localDate); 
-    
-//     calendarfeed.SetWebsite("https://www.forexfactory.com");
-//     String testContent = calendarfeed.GetFullWebsiteNameBasedOnDate(localDate);
-//     System.out.println(testContent);
-// 	}
-	
+	String TESTTIME = "9:00am";
+	GetCalendar calendarfeed = new GetCalendar();
+	TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
+	String calDateTest = calendarfeed.GetCalendarDate("22", 3, "2021");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    LocalDate localDate = LocalDate.parse(calDateTest, formatter);
+    ZonedDateTime tZone = calendarfeed.createZonedDateTime(localDate, TESTTIME, "Asia/Kolkata");
+    calendarfeed.SetWebsite("https://www.forexfactory.com");
+    String testContent = calendarfeed.GetFullWebsiteNameBasedOnDate(tZone);
+    System.out.println(testContent);
+	}
+}	
 // 	public void zonedDateTimeTest(String zoneID)
 // 	{
 	
