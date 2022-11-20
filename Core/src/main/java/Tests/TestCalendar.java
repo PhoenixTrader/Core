@@ -1,38 +1,75 @@
 package Tests;
 
 import java.time.LocalDate;
-//import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 // import java.util.Hashtable;
 // import java.util.List;
-// import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Document;
 
 // import com.google.common.collect.Iterables;
 // import com.google.common.collect.Multimap;
 
-// import DataFeed.CalendarFeed.ForexFactoryCalendarData;
+import DataFeed.CalendarFeed.ForexFactoryCalendarData;
 import DataFeed.CalendarFeed.GetCalendar;
 // import DataFeed.CalendarFeed.GetCalendarTimeSpan;
-// import DataFeed.CalendarFeed.GetForexFactoryCalendarPage;
+import DataFeed.CalendarFeed.GetForexFactoryCalendarPage;
 
 public class TestCalendar {
 
 	public void test_generate_websiteName()
 	{
 	
-	String TESTTIME = "9:00am";
-	GetCalendar calendarfeed = new GetCalendar();
-	TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
+    ForexFactoryCalendarData calendarfeed = new ForexFactoryCalendarData();
+    calendarfeed.SetWebsite("https://www.forexfactory.com");
+	
+    String TESTTIME = "9:00am";
+    TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
 	String calDateTest = calendarfeed.GetCalendarDate("22", 3, "2021");
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     LocalDate localDate = LocalDate.parse(calDateTest, formatter);
+    
     ZonedDateTime tZone = calendarfeed.createZonedDateTime(localDate, TESTTIME, "Asia/Kolkata");
-    calendarfeed.SetWebsite("https://www.forexfactory.com");
-    String testContent = calendarfeed.GetFullWebsiteNameBasedOnDate(tZone);
-    System.out.println(testContent);
+    String generate_websiteName = calendarfeed.GetFullWebsiteNameBasedOnDate(tZone);
+    System.out.println(generate_websiteName);
 	}
-}	
+
+    public void test_fetch_page_html(){
+		
+        ForexFactoryCalendarData calendarfeed = new ForexFactoryCalendarData();
+        calendarfeed.SetWebsite("https://www.forexfactory.com");
+        
+        String TESTTIME = "9:00am";
+        TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
+        String calDateTest = calendarfeed.GetCalendarDate("22", 3, "2021");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate localDate = LocalDate.parse(calDateTest, formatter);
+        
+        ZonedDateTime tZone = calendarfeed.createZonedDateTime(localDate, TESTTIME, "Asia/Kolkata");
+        String generate_websiteName = calendarfeed.GetFullWebsiteNameBasedOnDate(tZone);        
+        Document fullHTMLPage = calendarfeed.GetCalendarWebsite(generate_websiteName);
+		System.out.print(fullHTMLPage);
+	}
+
+
+    // public void testPureWebsite(){
+		
+	// 	LocalDateTime now = LocalDateTime.now();
+	// 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+	// 	String today = dtf.format(now);
+		
+	// 	GetForexFactoryCalendarPage GetForexFactoryCalendarPage = new GetForexFactoryCalendarPage();
+	// 	GetForexFactoryCalendarPage.SetWebsite("https://www.forexfactory.com");
+    //     String calDateTest = GetForexFactoryCalendarPage.GetCalendarDate("22", 3, "2021");
+    //     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    //     LocalDate localDate = LocalDate.parse(calDateTest, formatter);
+		
+        
+    //     Document fullHTMLPage = GetForexFactoryCalendarPage.GetCalendarWebsite(generate_websiteName);
+	// 	System.out.print(fullHTMLPage);
+	// }
+
 // 	public void zonedDateTimeTest(String zoneID)
 // 	{
 	
@@ -127,20 +164,7 @@ public class TestCalendar {
 // 	}
 	
 	
-// 	public void testPureWebsite(){
-		
-// 		LocalDateTime now = LocalDateTime.now();
-// 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-// 		String today = dtf.format(now);
-		
-// 		GetForexFactoryCalendarPage GetForexFactoryCalendarPage = new GetForexFactoryCalendarPage();
-// 		GetForexFactoryCalendarPage.SetWebsite("https://www.forexfactory.com");
-//         String calDateTest = GetForexFactoryCalendarPage.GetCalendarDate("22", 3, "2021");
-//         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//         LocalDate localDate = LocalDate.parse(calDateTest, formatter);
-// 		Document fullHTMLPage = GetForexFactoryCalendarPage.GetCalendarWebsite(localDate);
-// 		System.out.print(fullHTMLPage);
-// 	}
+
 	
 	
 // 	public void doubleClassCalendar(){
@@ -183,4 +207,4 @@ public class TestCalendar {
 		
 // 	}
 	
-// }
+}
