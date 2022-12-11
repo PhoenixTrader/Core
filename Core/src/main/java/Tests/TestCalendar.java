@@ -1,27 +1,37 @@
 package Tests;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-// import java.util.Hashtable;
-// import java.util.List;
+import java.util.Hashtable;
+import java.util.List;
 import org.jsoup.nodes.Document;
-
-// import com.google.common.collect.Iterables;
-// import com.google.common.collect.Multimap;
-
-import DataFeed.CalendarFeed.ForexFactoryCalendarData;
-import DataFeed.CalendarFeed.GetCalendar;
-// import DataFeed.CalendarFeed.GetCalendarTimeSpan;
-import DataFeed.CalendarFeed.GetForexFactoryCalendarPage;
+import DataFeed.CalendarFeed.FetchForexFactoryCalendarData;
+import DataFeed.CalendarFeed.FetchForexFactoryContent;
 
 public class TestCalendar {
+
+	public void eventsList() {
+		FetchForexFactoryCalendarData calendarfeed = new FetchForexFactoryCalendarData();
+        calendarfeed.SetWebsite("https://www.forexfactory.com");
+        String calDateTest = calendarfeed.GetCalendarDate("04", 1, "2021");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate localDate = LocalDate.parse(calDateTest, formatter);
+        String TESTTIME = "9:00am";
+        TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
+        ZonedDateTime tZone = calendarfeed.createZonedDateTime(localDate, TESTTIME, "Asia/Kolkata");
+        String generate_websiteName = calendarfeed.GetFullWebsiteNameBasedOnDate(tZone);        
+        System.out.println(generate_websiteName);
+        calendarfeed.SetWebsite(generate_websiteName);
+        System.out.println(calendarfeed.GetWebsite());
+        Hashtable<String, List<String>> todaysEvents = calendarfeed.eventsList(tZone);
+        System.out.println(todaysEvents);
+	}
 
 	public void test_generate_websiteName()
 	{
 	
-    ForexFactoryCalendarData calendarfeed = new ForexFactoryCalendarData();
+    FetchForexFactoryContent calendarfeed = new FetchForexFactoryContent();
     calendarfeed.SetWebsite("https://www.forexfactory.com");
 	
     String TESTTIME = "9:00am";
@@ -37,18 +47,23 @@ public class TestCalendar {
 
     public void test_fetch_page_html(){
 		
-        ForexFactoryCalendarData calendarfeed = new ForexFactoryCalendarData();
+        //Step 0: Instantiate Object. Set website in main script 
+        FetchForexFactoryContent calendarfeed = new FetchForexFactoryContent();
         calendarfeed.SetWebsite("https://www.forexfactory.com");
         
+        //Step 1: Get time from Quote => convert to that webpage Object can get correct calendar
         String TESTTIME = "9:00am";
         TESTTIME = calendarfeed.ConvertedTimeCalendar(TESTTIME);
         String calDateTest = calendarfeed.GetCalendarDate("22", 3, "2021");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate localDate = LocalDate.parse(calDateTest, formatter);
         
+        //Step 2: Set Zone of Date
         ZonedDateTime tZone = calendarfeed.createZonedDateTime(localDate, TESTTIME, "Asia/Kolkata");
+        
+        //Step 3: Generate Websitename to scrap. Get HTML-structure that will be parsed
         String generate_websiteName = calendarfeed.GetFullWebsiteNameBasedOnDate(tZone);        
-        Document fullHTMLPage = calendarfeed.GetCalendarWebsite(generate_websiteName);
+        Document fullHTMLPage = calendarfeed.FetchForexFactoryHTML(generate_websiteName);
 		System.out.print(fullHTMLPage);
 	}
 
@@ -107,18 +122,7 @@ public class TestCalendar {
 // 	    todaysEvents = calendarfeed.todaysEvents(daysEvents.size(), daysEvents, daysCurrencies, daysTime, daysActuals);
 // 	    System.out.println(todaysEvents);
 // 	}
-	
-// 	public void eventspacked() {
-// 		GetCalendar calendarfeed = new GetCalendar();
-//         calendarfeed.SetWebsite("https://www.forexfactory.com");
-//         String calDateTest = calendarfeed.GetCalendarDate("04", 1, "2021");
-//         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//         LocalDate localDate = LocalDate.parse(calDateTest, formatter);
-//         System.out.println(localDate);
-//         Hashtable<String, List<String>> todaysEvents = calendarfeed.eventsList(localDate);
-//         System.out.println(todaysEvents);
-// 	}
-	
+		
 // 	public void multiKeys() {
 // 		GetCalendar calendarfeed = new GetCalendar();
 //         calendarfeed.SetWebsite("https://www.forexfactory.com");
